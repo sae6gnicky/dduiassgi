@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>띄어쓰기 신나는 공부</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0; padding: 0;
+    font-family: "Apple SD Gothic Neo", "Malgun Gothic", "맑은 고딕", sans-serif;
+    background: #fff7e6;
+    color: #3a2e20;
+    user-select: none;
+  }
+  #app { max-width: 820px; margin: 0 auto; padding: 16px; min-height: 100vh; }
+
+  /* 공통 버튼 */
+  .big-btn {
+    display: block; width: 100%;
+    border: none; border-radius: 24px;
+    padding: 28px 20px; margin: 14px 0;
+    font-size: 30px; font-weight: 800;
+    color: #fff; cursor: pointer;
+    box-shadow: 0 6px 0 rgba(0,0,0,0.15);
+    transition: transform .05s;
+  }
+  .big-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 rgba(0,0,0,0.15); }
+  .btn-study { background: #ff9f43; }
+  .btn-practice { background: #54a0ff; }
+  .btn-orange { background: #ff9f43; }
+  .btn-blue { background: #54a0ff; }
+  .btn-green { background: #10ac84; }
+  .btn-gray { background: #8d99ae; }
+  .btn-pink { background: #ee5a6f; }
+
+  .small-btn {
+    border: none; border-radius: 16px;
+    padding: 12px 22px; font-size: 18px; font-weight: 700;
+    color: #fff; cursor: pointer; margin: 6px 4px;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.15);
+  }
+  .small-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0,0,0,0.15); }
+
+  /* 홈 */
+  .home-title {
+    text-align: center; font-size: 42px; font-weight: 900;
+    margin: 30px 0 6px; color: #ee5a6f;
+    text-shadow: 2px 2px 0 #fff;
+  }
+  .home-sub { text-align: center; font-size: 20px; color: #7a6a53; margin-bottom: 30px; }
+  .mascot { text-align: center; font-size: 90px; margin: 10px 0 20px; }
+
+  /* 헤더 */
+  .top-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .home-link {
+    background: #ffd166; border: none; border-radius: 14px;
+    padding: 10px 16px; font-size: 18px; font-weight: 800; cursor: pointer;
+    box-shadow: 0 3px 0 rgba(0,0,0,0.12);
+  }
+  .home-link:active { transform: translateY(2px); }
+  .page-title { font-size: 26px; font-weight: 900; color: #ff7f11; }
+
+  /* 공부하기 카드 */
+  .study-nav { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+  .chip {
+    border: 3px solid #ffd166; background: #fff; border-radius: 999px;
+    padding: 8px 16px; font-size: 16px; font-weight: 800; cursor: pointer; color: #3a2e20;
+  }
+  .chip.active { background: #ffd166; }
+
+  .card {
+    background: #fff; border-radius: 22px; padding: 20px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.08); margin-bottom: 18px;
+    border: 3px solid #ffe3a3;
+  }
+  .card h2 { margin: 0 0 6px; font-size: 24px; color: #ee5a6f; }
+  .card .rule-plain { font-size: 20px; font-weight: 800; margin: 10px 0; color: #2f6b3d; line-height: 1.5; }
+  .card .term-note { font-size: 14px; color: #9a8a70; margin-bottom: 12px; }
+  .ex-list { margin: 8px 0 0; padding: 0; list-style: none; }
+  .ex-list li {
+    background: #fff7e6; border-radius: 14px; padding: 12px 16px;
+    font-size: 22px; margin: 8px 0; line-height: 1.6;
+  }
+  .ex-list li .why { display:block; font-size: 15px; color:#8d7a5c; margin-top:4px; font-weight:600; }
+  .attached { color: #e8590c; font-weight: 800; }
+  .space-mark { color: #10ac84; font-weight: 900; }
+
+  .study-footer { text-align: center; margin: 24px 0; }
+  .study-footer p { font-size: 20px; font-weight: 800; color: #2f6b3d; }
+
+  /* 연습하기 */
+  .practice-progress { text-align: center; font-size: 18px; font-weight: 800; color: #7a6a53; margin-bottom: 8px; }
+  .practice-guide {
+    text-align: center; background: #dff9fb; border-radius: 16px;
+    padding: 12px; font-size: 17px; font-weight: 700; color: #2c6e7f; margin-bottom: 18px;
+  }
+  .sentence-box {
+    background: #fff; border-radius: 22px; border: 3px solid #a5d8ff;
+    padding: 30px 16px; margin-bottom: 20px; text-align: center;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.08); min-height: 120px;
+    display: flex; align-items: center; justify-content: center; flex-wrap: wrap;
+    line-height: 2.4;
+  }
+  .char {
+    font-size: 36px; font-weight: 800; display: inline-block; padding: 0 1px;
+  }
+  .gap {
+    display: inline-block; width: 26px; height: 46px; position: relative;
+    cursor: pointer; vertical-align: middle; border-radius: 8px;
+  }
+  .gap:hover { background: rgba(84,160,255,0.12); }
+  .gap.on { background: rgba(16,172,132,0.15); }
+  .gap .v {
+    position: absolute; top: -6px; left: 50%; transform: translateX(-50%);
+    font-size: 26px; font-weight: 900; color: #10ac84; display: none;
+  }
+  .gap.on .v { display: block; }
+  .gap.on::after {
+    content: ""; position: absolute; left: 50%; top: 20%; bottom: 20%;
+    width: 3px; background: #10ac84; transform: translateX(-50%); border-radius: 2px;
+  }
+
+  /* 채점 색상 */
+  .gap.correct .v { color: #10ac84; }
+  .gap.wrong-added { background: rgba(238,90,111,0.18); }
+  .gap.wrong-added .v { color: #ee5a6f; display:block; }
+  .gap.missed { background: rgba(255,159,67,0.28); }
+  .gap.missed::before {
+    content: "V"; position: absolute; top: -6px; left: 50%; transform: translateX(-50%);
+    font-size: 24px; font-weight: 900; color: #e8590c;
+  }
+
+  .practice-actions { text-align: center; }
+
+  .result-box {
+    background: #fff; border-radius: 22px; padding: 20px; margin-top: 18px;
+    border: 3px solid #ffe3a3; box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+  }
+  .result-box.ok { border-color: #b2f2bb; }
+  .result-box.no { border-color: #ffc9c9; }
+  .result-head { font-size: 26px; font-weight: 900; margin-bottom: 10px; }
+  .result-box.ok .result-head { color: #2f9e44; }
+  .result-box.no .result-head { color: #e03131; }
+  .answer-line { font-size: 26px; font-weight: 800; margin: 10px 0; color: #1c3d5a; line-height: 1.6; }
+  .answer-line .sp { color: #10ac84; }
+  .explain {
+    background: #fff7e6; border-radius: 14px; padding: 14px 16px; margin-top: 12px;
+    font-size: 18px; line-height: 1.6; font-weight: 600;
+  }
+  .explain b { color: #e8590c; }
+  .done-msg { text-align:center; font-size: 26px; font-weight: 900; color:#2f9e44; margin: 30px 0; }
+
+  /* 별 모으기 */
+  .star-bank {
+    text-align: center; font-size: 20px; font-weight: 800; color: #b8860b;
+    background: #fff8dc; border: 3px solid #ffe08a; border-radius: 18px;
+    padding: 14px; margin: 18px 0;
+  }
+  .star-bank b { color: #e8590c; font-size: 24px; }
+  .star-earn {
+    text-align: center; font-size: 22px; font-weight: 900; color: #f5a623;
+    margin-bottom: 8px; animation: pop .4s ease;
+  }
+  @keyframes pop { 0%{transform:scale(0.3);opacity:0;} 60%{transform:scale(1.2);} 100%{transform:scale(1);opacity:1;} }
+  .star-result {
+    background: #fff8dc; border: 3px solid #ffe08a; border-radius: 22px;
+    padding: 20px; text-align: center; margin-bottom: 16px;
+  }
+  .star-row { font-size: 34px; line-height: 1.6; word-break: break-word; }
+  .result-star { margin: 0 2px; }
+  .star-count { font-size: 22px; font-weight: 800; margin-top: 8px; color: #b8860b; }
+  .star-count b { color: #e8590c; font-size: 28px; }
+
+  /* 난이도 선택 */
+  .level-title { text-align: center; font-size: 26px; font-weight: 900; color: #ff7f11; margin: 16px 0 22px; }
+  .level-btn { position: relative; }
+  .level-desc { display: block; font-size: 16px; font-weight: 600; opacity: .95; margin-top: 6px; }
+
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* =========================================================
+   데이터
+   ========================================================= */
+
+// 공부하기: 원칙 묶음 (어려운 용어는 쉬운 말로 풀어서 설명)
+const STUDY = [
+  {
+    key: "attach",
+    tab: "붙여 써요",
+    color: "#ff9f43",
+    cards: [
+      {
+        title: "낱말이 합쳐진 말은 붙여요",
+        plain: "두 낱말이 합쳐져 한 낱말이 되면 붙여 써요.",
+        term: "(합성어)",
+        examples: [
+          { text: "코끼리 다리 / 닭다리", why: "‘닭다리’는 한 낱말이라 붙여요." },
+          { text: "연필꽂이", why: "‘연필’과 ‘꽂이’가 합쳐진 한 낱말이에요." },
+          { text: "학교 밖 / 문밖 / 창밖", why: "‘문밖·창밖’은 한 낱말이라 붙여요." },
+        ],
+      },
+      {
+        title: "말 뒤에 붙는 도우미 말은 붙여요",
+        plain: "‘은/는/이/가/에게/처럼/까지…’ 같은 도우미 말은 앞말에 딱 붙여 써요.",
+        term: "(조사)",
+        examples: [
+          { text: "사실[대로] 말해.", why: "‘대로’가 도우미 말일 때는 붙여요." },
+          { text: "나[보다] 빨라.", why: "‘보다’가 비교하는 도우미 말이라 붙여요." },
+          { text: "자식[같이] 아꼈다.", why: "‘같이’가 ‘처럼’ 뜻일 때는 붙여요." },
+          { text: "지금[부터] 시작!", why: "도우미 말은 여러 개라도 붙여요." },
+        ],
+      },
+      {
+        title: "‘이다’도 붙여요",
+        plain: "‘~이다’로 끝나는 말도 앞말에 붙여 써요.",
+        term: "(조사 ‘이다’)",
+        examples: [
+          { text: "내겐 너[뿐]이다.", why: "‘뿐이다’는 붙여 써요." },
+          { text: "겨울[이라서] 추워.", why: "‘이라서’도 붙여요." },
+        ],
+      },
+      {
+        title: "낱말 앞뒤에 붙어 뜻을 더하는 말은 붙여요",
+        plain: "‘한~ / 첫~ / ~씩 / ~끼리’처럼 낱말에 붙어 뜻을 더해주는 말은 붙여 써요.",
+        term: "(접사)",
+        examples: [
+          { text: "한 개[씩], 우리[끼리]", why: "‘씩·끼리’는 붙여요." },
+          { text: "사랑[하다], 생각[나다]", why: "‘하다·나다’가 붙어 움직임을 나타내면 붙여요." },
+        ],
+      },
+    ],
+  },
+  {
+    key: "space",
+    tab: "띄어 써요",
+    color: "#54a0ff",
+    cards: [
+      {
+        title: "이름이 되는 말은 띄어요",
+        plain: "사람·물건·장소의 이름이 되는 말은 앞말과 띄어 써요.",
+        term: "(명사)",
+        examples: [
+          { text: "가을 V 하늘, 공원 V 놀이터", why: "이름이 되는 말끼리는 띄어요." },
+          { text: "한 V 개, 한 V 명, 두 V 마리", why: "개수를 세는 말은 띄어요." },
+          { text: "숟가락 V 하나", why: "세는 말은 앞말과 띄어요." },
+        ],
+      },
+      {
+        title: "혼자 못 쓰는 이름은 띄어요",
+        plain: "‘것·수·때·적·중·데’처럼 혼자서는 못 쓰고, 앞에 꾸며 주는 말이 꼭 있어야 하는 말은 띄어 써요.",
+        term: "(의존명사)",
+        examples: [
+          { text: "먹을 V 것, 잘 V 수 V 있다", why: "‘것·수’는 앞말과 띄어요." },
+          { text: "본 V 적이 있어.", why: "‘적’은 띄어요." },
+          { text: "좋은 V 데 가자.", why: "‘데’가 ‘곳’ 뜻이면 띄어요." },
+        ],
+      },
+      {
+        title: "뒤에 오는 이름을 꾸며 주는 말은 띄어요",
+        plain: "‘새·헌·옛·이·그·저·여러·어떤’처럼 뒤 이름을 꾸며 주는 말은 띄어 써요.",
+        term: "(관형사)",
+        examples: [
+          { text: "새 V 차, 헌 V 책, 옛 V 친구", why: "꾸며 주는 말은 띄어요." },
+          { text: "여러 V 가지 낱말", why: "‘여러’는 뒷말과 띄어요." },
+          { text: "예쁜 V 우산", why: "꾸며 주는 말은 띄어요." },
+        ],
+      },
+      {
+        title: "움직임·모습을 나타내는 말은 띄어요",
+        plain: "‘먹다·자다·예쁘다’처럼 움직임이나 모습을 나타내는 말은 서로 띄어 써요.",
+        term: "(용언)",
+        examples: [
+          { text: "먹고 V 잤다. 꺼내 V 보았다.", why: "두 움직임 말은 띄어요." },
+          { text: "잘할 V 수 V 있어.", why: "띄어 써요." },
+          { text: "많이 V 무겁네.", why: "꾸며 주는 말과 띄어요." },
+        ],
+      },
+    ],
+  },
+  {
+    key: "etc",
+    tab: "그 밖에",
+    color: "#10ac84",
+    cards: [
+      {
+        title: "‘잘·안·못’은 뒷말과 띄어요",
+        plain: "‘잘·안·못’은 뒤에 오는 움직임 말과 띄어 써요. (단, ‘잘못·안돼’처럼 한 낱말은 붙여요.)",
+        term: "(부사 잘·안·못)",
+        examples: [
+          { text: "잘 V 먹는다.", why: "‘잘’은 뒷말과 띄어요." },
+          { text: "안 V 됐다 / 안됐다", why: "안타깝다는 뜻이면 ‘안됐다’로 붙여요." },
+          { text: "정말 안 V 되겠어!", why: "‘안’이 부정일 때는 띄어요." },
+        ],
+      },
+      {
+        title: "한 글자 이름이 이어지면 붙일 수 있어요",
+        plain: "한 글자 이름이 이어질 때는 뜻이 되는 묶음끼리 붙여 쓸 수 있어요.",
+        term: "(한 글자 명사)",
+        examples: [
+          { text: "물 한 잔 / 물 한잔", why: "‘한잔’으로 붙일 수 있어요." },
+          { text: "집 한 채 / 집 한채", why: "묶어서 붙일 수 있어요." },
+          { text: "한 명 한 명 / 한명 한명", why: "묶음끼리 붙일 수 있어요." },
+        ],
+      },
+    ],
+  },
+  {
+    key: "tricky",
+    tab: "헷갈리는 말 ⭐",
+    color: "#ee5a6f",
+    intro: "같은 글자인데 뜻에 따라 붙일 때도, 띄울 때도 있어요! 아래 11가지를 잘 봐요.",
+    tricky: [
+      { word: "만", attach: { ex: "햄만 먹네.", mean: "‘오직 그것’ 뜻이면 붙여요 (도우미 말)." },
+        space: [ { ex: "1년 V 만에", mean: "지난 기간을 나타내면 띄어요." },
+                 { ex: "먹을 V 만하다", mean: "‘~할 정도’ 뜻이면 띄어요." } ] },
+      { word: "보다", attach: { ex: "나보다 빨라.", mean: "‘한층 더’ 비교하는 도우미 말이면 붙여요." },
+        space: [ { ex: "자세히 V 보다.", mean: "눈으로 본다는 움직임 말이면 띄어요." } ] },
+      { word: "같이", attach: { ex: "자식같이 아꼈다.", mean: "‘처럼’ 뜻이면 붙여요." },
+        space: [ { ex: "책을 V 같이 읽었다.", mean: "‘함께’ 뜻이면 띄어요." } ] },
+      { word: "따라", attach: { ex: "오늘따라 잘 안 돼.", mean: "특별한 이유 없이 그럴 때는 붙여요." },
+        space: [ { ex: "나를 V 따라 오세요.", mean: "뒤를 좇는 움직임이면 띄어요." } ] },
+      { word: "대로", attach: { ex: "사실대로 말해.", mean: "‘앞말과 같이’ 뜻이면 붙여요." },
+        space: [ { ex: "아는 V 대로 말해 줄래?", mean: "움직임 말 뒤에서는 띄어요." } ] },
+      { word: "만큼", attach: { ex: "하늘만큼 땅만큼", mean: "이름 뒤에서는 붙여요." },
+        space: [ { ex: "먹을 V 만큼 가져와.", mean: "움직임 말 뒤에서는 띄어요." } ] },
+      { word: "밖", attach: { ex: "조금밖에 없어.", mean: "‘그것 말고는’ 뜻이면 붙여요." },
+        space: [ { ex: "교실 V 밖", mean: "‘바깥’ 뜻이면 띄어요." } ] },
+      { word: "걸", attach: { ex: "사과할걸.", mean: "문장 끝에서 후회하는 말이면 붙여요." },
+        space: [ { ex: "맛있는 V 걸 줄게.", mean: "‘것을’ 뜻으로 가운데 쓰면 띄어요." } ] },
+      { word: "데", attach: { ex: "좋은데!", mean: "움직임·모습 말 뒤에 붙는 말이면 붙여요." },
+        space: [ { ex: "좋은 V 데 가자.", mean: "‘곳·장소’ 뜻이면 띄어요." } ] },
+      { word: "지", attach: { ex: "큰지 작은지", mean: "‘~인지’ 뜻이면 붙여요." },
+        space: [ { ex: "시작한 V 지 10분", mean: "시간이 지남을 나타내면 띄어요." } ] },
+      { word: "뿐", attach: { ex: "내겐 너뿐이다.", mean: "‘오직’ 뜻이면 붙여요." },
+        space: [ { ex: "잠만 잘 V 뿐이다.", mean: "움직임 말 뒤에서는 띄어요." } ] },
+    ],
+  },
+];
+
+/* 연습하기 문제
+   answer = 정답(띄어쓰기 된 문장)
+   gaps   = 정답 기준, 각 글자 사이에 띄어야 하면 true
+   rule   = 채점 후 보여줄 원칙 설명
+*/
+function makeGaps(answer) {
+  // answer의 공백 위치를 글자 사이 gap 인덱스로 변환
+  const chars = [];
+  const spaceAfter = []; // chars[i] 뒤에 공백이 있는가
+  for (let i = 0; i < answer.length; i++) {
+    const c = answer[i];
+    if (c === " ") {
+      if (chars.length > 0) spaceAfter[chars.length - 1] = true;
+    } else {
+      chars.push(c);
+      spaceAfter[chars.length - 1] = false;
+    }
+  }
+  // gap j 는 chars[j] 와 chars[j+1] 사이 (j = 0 .. chars.length-2)
+  const gaps = [];
+  for (let j = 0; j < chars.length - 1; j++) gaps.push(!!spaceAfter[j]);
+  return { chars, gaps };
+}
+
+// 난이도별 연습 문제 풀(POOL)
+//  easy   : 낱말 2개, 아주 짧고 원칙이 뚜렷한 문장
+//  normal : 낱말 3개 안팎, 조금 더 긴 문장
+//  hard   : 헷갈리는 말 등 판단이 필요한 문장
+//  * 문장 풀이 크고, 매번 랜덤으로 10문제만 뽑아 출제해요.
+//  * 새로 만든 문장은 긍정적인 말·좋은 다짐 위주로 담았어요.
+const RAW_PRACTICE = {
+  easy: [
+    // 이름이 되는 말끼리 띄기
+    { answer: "가을 하늘", rule: "이름이 되는 말끼리는 <b>띄어 써요</b>." },
+    { answer: "봄 햇살", rule: "이름이 되는 말끼리는 <b>띄어 써요</b>." },
+    { answer: "파란 바다", rule: "‘파란’은 꾸며 주는 말이라 <b>띄어요</b>." },
+    { answer: "예쁜 우산", rule: "‘예쁜’은 꾸며 주는 말이라 <b>띄어요</b>." },
+    { answer: "고운 마음", rule: "‘고운’은 꾸며 주는 말이라 <b>띄어요</b>." },
+    { answer: "밝은 미소", rule: "‘밝은’은 꾸며 주는 말이라 <b>띄어요</b>." },
+    { answer: "따뜻한 말", rule: "‘따뜻한’은 꾸며 주는 말이라 <b>띄어요</b>." },
+    { answer: "소중한 친구", rule: "‘소중한’은 꾸며 주는 말이라 <b>띄어요</b>." },
+    // 꾸며 주는 말(새·헌 등)
+    { answer: "새 차", rule: "‘새’는 뒤 이름을 <b>꾸며 주는 말</b>이라 띄어요." },
+    { answer: "헌 책", rule: "‘헌’은 뒤 이름을 <b>꾸며 주는 말</b>이라 띄어요." },
+    { answer: "새 친구", rule: "‘새’는 뒤 이름을 <b>꾸며 주는 말</b>이라 띄어요." },
+    { answer: "새 마음", rule: "‘새’는 뒤 이름을 <b>꾸며 주는 말</b>이라 띄어요." },
+    // 잘·많이 등 꾸미는 말 + 움직임 말
+    { answer: "잘 먹는다", rule: "‘잘’은 뒤에 오는 움직임 말과 <b>띄어 써요</b>." },
+    { answer: "잘 잤다", rule: "‘잘’은 뒤에 오는 움직임 말과 <b>띄어 써요</b>." },
+    { answer: "많이 무겁네", rule: "‘많이’는 꾸며 주는 말이라 뒤 낱말과 <b>띄어요</b>." },
+    { answer: "천천히 걷자", rule: "‘천천히’는 꾸며 주는 말이라 뒤 낱말과 <b>띄어요</b>." },
+    { answer: "활짝 웃자", rule: "‘활짝’은 꾸며 주는 말이라 뒤 낱말과 <b>띄어요</b>." },
+    { answer: "함께 놀자", rule: "‘함께’는 꾸며 주는 말이라 뒤 낱말과 <b>띄어요</b>." },
+    // 세는 말 띄기
+    { answer: "숟가락 하나", rule: "세는 말은 앞 이름과 <b>띄어요</b>." },
+    { answer: "사과 한 개", rule: "개수를 세는 ‘개’는 앞말과 <b>띄어요</b>." },
+    { answer: "강아지 두 마리", rule: "‘마리’는 세는 말이라 <b>띄어요</b>." },
+    { answer: "친구 세 명", rule: "‘명’은 세는 말이라 <b>띄어요</b>." },
+    // 밖(바깥)
+    { answer: "교실 밖", rule: "‘밖’이 ‘바깥’ 뜻이면 <b>띄어요</b>." },
+    { answer: "창문 밖", rule: "‘밖’이 ‘바깥’ 뜻이면 <b>띄어요</b>." },
+  ],
+  normal: [
+    // 보다(비교) 붙이기
+    { answer: "나보다 빨라", rule: "‘보다’가 비교하는 도우미 말이라 <b>앞말에 붙여요</b>. 그래서 ‘나보다’는 붙이고 뒤 낱말과는 띄어요." },
+    { answer: "어제보다 즐거워", rule: "‘보다’가 비교하는 도우미 말이라 <b>앞말에 붙여요</b>." },
+    // 혼자 못 쓰는 이름(수·적·것) 띄기
+    { answer: "잘할 수 있어", rule: "‘수’는 혼자 못 쓰는 이름이라 <b>앞말과 띄어요</b>. ‘잘할’은 한 낱말이에요." },
+    { answer: "나는 할 수 있어", rule: "‘수’는 혼자 못 쓰는 이름이라 <b>앞말과 띄어요</b>." },
+    { answer: "본 적이 있어", rule: "‘적’은 혼자 못 쓰는 이름이라 <b>앞말과 띄어요</b>." },
+    { answer: "먹을 것을 나눠", rule: "‘것’은 혼자 못 쓰는 이름이라 <b>앞말과 띄어요</b>." },
+    { answer: "해야 할 일이야", rule: "‘일’ 앞의 ‘할’과는 <b>띄어 써요</b>." },
+    // 한 글자 세는 말
+    { answer: "물 한 잔", rule: "세는 말은 <b>띄어 써요</b>. (한 글자끼리 ‘한잔’으로 붙일 수도 있어요.)" },
+    { answer: "밥 한 그릇", rule: "세는 말은 <b>띄어 써요</b>." },
+    // 같이(함께)
+    { answer: "책을 같이 읽었다", rule: "‘같이’가 ‘함께’ 뜻이면 <b>띄어요</b>." },
+    { answer: "친구와 같이 가자", rule: "‘같이’가 ‘함께’ 뜻이면 <b>띄어요</b>." },
+    // 꾸며 주는 말 여러 개
+    { answer: "새 차 헌 책", rule: "‘새·헌’은 뒤 이름을 <b>꾸며 주는 말</b>이라 띄어요." },
+    { answer: "여러 가지 낱말", rule: "‘여러’는 뒤 이름을 꾸며 주는 말이라 <b>띄어요</b>." },
+    // 만큼(움직임 말 뒤)
+    { answer: "먹을 만큼 가져와", rule: "‘만큼’이 움직임 말 뒤에 오면 <b>띄어요</b>." },
+    { answer: "할 수 있는 만큼 하자", rule: "‘만큼’이 움직임 말 뒤에 오면 <b>띄어요</b>." },
+    // 지(시간의 지남)
+    { answer: "시작한 지 10분", rule: "시간이 지난 것을 나타내는 ‘지’는 <b>띄어요</b>." },
+    { answer: "만난 지 오래됐어", rule: "시간이 지난 것을 나타내는 ‘지’는 <b>띄어요</b>." },
+    // 두 움직임 말 띄기
+    { answer: "꺼내 보았다", rule: "두 움직임 말은 <b>띄어 써요</b>." },
+    { answer: "많이 무겁네", rule: "‘많이’는 꾸며 주는 말이라 뒤 낱말과 <b>띄어요</b>." },
+    // 긍정 다짐 문장
+    { answer: "나는 참 소중해", rule: "‘참’은 꾸며 주는 말이라 뒤 낱말과 <b>띄어요</b>." },
+    { answer: "오늘도 좋은 날", rule: "‘좋은’은 꾸며 주는 말이라 <b>띄어요</b>." },
+    { answer: "천천히 해도 괜찮아", rule: "‘천천히’와 ‘해도’는 <b>띄어 써요</b>." },
+  ],
+  hard: [
+    // 만(기간/정도 → 띄기)
+    { answer: "1년 만에 왔다", rule: "‘만’이 지난 기간을 뜻하면 <b>띄어요</b>. (‘햄만 먹네’처럼 오직 그것 뜻이면 붙여요.)" },
+    { answer: "먹을 만하다", rule: "‘만’이 ‘~할 정도’ 뜻이면 <b>띄어요</b>." },
+    // 대로(움직임 말 뒤 → 띄기)
+    { answer: "아는 대로 말해", rule: "‘대로’가 움직임 말 뒤에 오면 <b>띄어요</b>. (‘사실대로’처럼 이름 뒤면 붙여요.)" },
+    { answer: "생각한 대로 이루어져", rule: "‘대로’가 움직임 말 뒤에 오면 <b>띄어요</b>." },
+    // 걸(것을 → 띄기)
+    { answer: "맛있는 걸 줄게", rule: "‘걸’이 ‘것을’ 뜻으로 가운데 쓰이면 <b>띄어요</b>. (‘사과할걸’처럼 문장 끝 후회 말이면 붙여요.)" },
+    // 데(곳 → 띄기)
+    { answer: "좋은 데 가자", rule: "‘데’가 ‘곳·장소’ 뜻이면 <b>띄어요</b>. (‘좋은데!’처럼 뒤에 붙는 말이면 붙여요.)" },
+    // 뿐(움직임 말 뒤 → 띄기)
+    { answer: "잠만 잘 뿐이다", rule: "‘뿐’이 움직임 말 뒤에 오면 <b>띄어요</b>. (‘너뿐이다’처럼 이름 뒤면 붙여요.)" },
+    { answer: "웃을 뿐이야", rule: "‘뿐’이 움직임 말 뒤에 오면 <b>띄어요</b>." },
+    // 따라(좇다 → 띄기)
+    { answer: "나를 따라 오세요", rule: "‘따라’가 뒤를 좇는 움직임이면 <b>띄어요</b>. (‘오늘따라’처럼 이름 뒤면 붙여요.)" },
+    // 개씩(세는 말 띄고, 씩 붙이기)
+    { answer: "한 개씩 나눠 먹어라", rule: "개수를 세는 ‘개’는 <b>띄어 써요</b>. ‘~씩’은 붙는 말이라 ‘개씩’으로 붙여요." },
+    { answer: "하나씩 천천히 하자", rule: "‘~씩’은 붙는 말이라 ‘하나씩’으로 붙이고, 뒤 낱말과는 <b>띄어요</b>." },
+    // 잘·안·못 띄기
+    { answer: "먼저 사과하면 어떨까", rule: "‘먼저’는 꾸며 주는 말이라 뒤와 <b>띄어요</b>. ‘사과하면’은 한 낱말이에요." },
+    { answer: "정말 안 되겠어", rule: "‘안’이 부정의 뜻이면 뒷말과 <b>띄어요</b>." },
+    { answer: "아직 못 했어", rule: "‘못’은 뒤 움직임 말과 <b>띄어 써요</b>." },
+    // 긍정·명언 느낌의 조금 긴 문장
+    { answer: "천 리 길도 한 걸음부터", rule: "‘천 리’는 거리를 세는 말이라 <b>띄고</b>, ‘한 걸음’도 세는 말이라 띄어요." },
+    { answer: "티끌 모아 태산", rule: "이름이 되는 말과 움직임 말은 서로 <b>띄어 써요</b>." },
+    { answer: "웃는 얼굴에 복이 와", rule: "‘웃는’은 꾸며 주는 말이라 <b>띄고</b>, 낱말끼리 모두 띄어요." },
+    { answer: "포기하지 않으면 이룰 수 있어", rule: "‘수’는 혼자 못 쓰는 이름이라 <b>앞말과 띄어요</b>." },
+    { answer: "실수해도 다시 하면 돼", rule: "‘다시’는 꾸며 주는 말이라 뒤 낱말과 <b>띄어요</b>." },
+    { answer: "나는 날마다 자라고 있어", rule: "‘날마다’는 붙여 쓰고, 낱말끼리는 <b>띄어 써요</b>." },
+  ],
+};
+
+const LEVELS = {
+  easy:   { name: "쉬움",  emoji: "🌱", color: "#10ac84", desc: "짧은 문장으로 시작해요" },
+  normal: { name: "보통",  emoji: "⭐", color: "#54a0ff", desc: "조금 더 긴 문장이에요" },
+  hard:   { name: "도전",  emoji: "🔥", color: "#ee5a6f", desc: "헷갈리는 말에 도전해요" },
+};
+
+const QUESTIONS_PER_GAME = 10; // 한 판에 낼 문제 수
+
+// 배열을 무작위로 섞기 (Fisher–Yates)
+function shuffle(arr){
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+const PRACTICE = {};
+Object.keys(RAW_PRACTICE).forEach(lv => {
+  PRACTICE[lv] = RAW_PRACTICE[lv].map(p => {
+    const g = makeGaps(p.answer);
+    return { answer: p.answer, chars: g.chars, gaps: g.gaps, rule: p.rule };
+  });
+});
+
+/* =========================================================
+   화면 렌더링
+   ========================================================= */
+const app = document.getElementById("app");
+
+// 별 모으기 (브라우저에 저장해서 다시 열어도 유지)
+let totalStars = parseInt(localStorage.getItem("ttz_stars") || "0", 10);
+if (isNaN(totalStars)) totalStars = 0;
+function addStars(n){
+  totalStars += n;
+  localStorage.setItem("ttz_stars", String(totalStars));
+}
+
+function esc(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+// 예문 텍스트에서 [xxx] 는 붙는 말 강조, V 는 띄는 표시
+function decorateExample(text){
+  let t = esc(text);
+  t = t.replace(/\[(.+?)\]/g, '<span class="attached">$1</span>');
+  t = t.replace(/\s*V\s*/g, ' <span class="space-mark">V</span> ');
+  return t;
+}
+
+/* ---------- 홈 ---------- */
+function renderHome(){
+  app.innerHTML = `
+    <div class="mascot">🐣</div>
+    <div class="home-title">띄어쓰기 신나는 공부</div>
+    <div class="home-sub">공부하고, 연습하고, 척척박사 되어요!</div>
+    <button class="big-btn btn-study" id="goStudy">📖 공부하기</button>
+    <button class="big-btn btn-practice" id="goPractice">✏️ 연습하기</button>
+    <div class="star-bank">⭐ 지금까지 모은 별: <b>${totalStars}</b>개</div>
+  `;
+  document.getElementById("goStudy").onclick = () => renderStudy(0);
+  document.getElementById("goPractice").onclick = renderLevelSelect;
+}
+
+/* ---------- 난이도 선택 ---------- */
+function renderLevelSelect(){
+  window.scrollTo(0,0);
+  const btns = Object.keys(LEVELS).map(lv => {
+    const L = LEVELS[lv];
+    const poolN = PRACTICE[lv].length;
+    const playN = Math.min(QUESTIONS_PER_GAME, poolN);
+    return `<button class="big-btn level-btn" data-lv="${lv}" style="background:${L.color};">
+      ${L.emoji} ${L.name}
+      <span class="level-desc">${L.desc} · 매번 ${playN}문제 (총 ${poolN}개 중에서 랜덤!)</span>
+    </button>`;
+  }).join("");
+  app.innerHTML = `
+    <div class="top-bar"><button class="home-link" id="home">🏠</button>
+      <div class="page-title">✏️ 연습하기</div></div>
+    <div class="level-title">어떤 걸 연습해 볼까요?</div>
+    ${btns}
+    <div class="star-bank">⭐ 지금까지 모은 별: <b>${totalStars}</b>개</div>
+  `;
+  document.getElementById("home").onclick = renderHome;
+  document.querySelectorAll(".level-btn").forEach(b => {
+    b.onclick = () => renderPractice(b.dataset.lv, 0);
+  });
+}
+
+/* ---------- 공부하기 ---------- */
+function renderStudy(tabIndex){
+  const section = STUDY[tabIndex];
+  let tabs = STUDY.map((s,i) =>
+    `<button class="chip ${i===tabIndex?'active':''}" data-i="${i}">${s.tab}</button>`
+  ).join("");
+
+  let body = "";
+  if (section.tricky){
+    body += `<div class="card" style="background:#fff0f3;border-color:#ffc9d4;">
+      <div class="rule-plain" style="color:#c92a4a;">${section.intro}</div></div>`;
+    section.tricky.forEach((t, idx) => {
+      let spaces = t.space.map(s =>
+        `<li>${decorateExample(s.ex)}<span class="why">👉 ${esc(s.mean)}</span></li>`
+      ).join("");
+      body += `
+        <div class="card">
+          <h2>${idx+1}. ‘${t.word}’</h2>
+          <div class="rule-plain" style="color:#e8590c;">✅ 붙여 쓸 때</div>
+          <ul class="ex-list">
+            <li>${decorateExample(t.attach.ex)}<span class="why">👉 ${esc(t.attach.mean)}</span></li>
+          </ul>
+          <div class="rule-plain" style="color:#2f6b3d;">✅ 띄어 쓸 때</div>
+          <ul class="ex-list">${spaces}</ul>
+        </div>`;
+    });
+  } else {
+    body = section.cards.map(c => {
+      let exs = c.examples.map(e =>
+        `<li>${decorateExample(e.text)}<span class="why">👉 ${esc(e.why)}</span></li>`
+      ).join("");
+      return `
+        <div class="card">
+          <h2>${esc(c.title)}</h2>
+          <div class="rule-plain">${esc(c.plain)}</div>
+          <div class="term-note">어른들은 이렇게 불러요 ${esc(c.term)}</div>
+          <ul class="ex-list">${exs}</ul>
+        </div>`;
+    }).join("");
+  }
+
+  const isLast = tabIndex === STUDY.length - 1;
+  const nav = isLast
+    ? `<button class="big-btn btn-blue" id="toPractice">🎉 공부 끝! 연습하러 가기 ✏️</button>`
+    : `<button class="big-btn btn-orange" id="nextTab">다음 ▶</button>`;
+
+  app.innerHTML = `
+    <div class="top-bar">
+      <button class="home-link" id="home">🏠</button>
+      <div class="page-title">📖 공부하기</div>
+    </div>
+    <div class="study-nav">${tabs}</div>
+    ${body}
+    <div class="study-footer">${nav}</div>
+  `;
+
+  document.getElementById("home").onclick = renderHome;
+  document.querySelectorAll(".chip").forEach(ch => {
+    ch.onclick = () => renderStudy(parseInt(ch.dataset.i));
+  });
+  if (isLast) document.getElementById("toPractice").onclick = renderLevelSelect;
+  else document.getElementById("nextTab").onclick = () => { window.scrollTo(0,0); renderStudy(tabIndex+1); };
+}
+
+/* ---------- 연습하기 ---------- */
+let userGaps = [];       // 사용자가 V 표시한 gap 상태
+let curLevel = "easy";   // 현재 난이도
+let sessionStars = 0;    // 이번 판에서 모은 별
+let answered = false;    // 현재 문제 채점했는지
+let currentSet = [];     // 이번 판에 낼 랜덤 10문제
+
+function renderPractice(level, qIndex){
+  curLevel = level;
+  const L = LEVELS[level];
+
+  if (qIndex === 0){
+    sessionStars = 0; // 새 판 시작
+    // 풀에서 무작위로 섞어 QUESTIONS_PER_GAME개만 뽑기
+    const n = Math.min(QUESTIONS_PER_GAME, PRACTICE[level].length);
+    currentSet = shuffle(PRACTICE[level]).slice(0, n);
+  }
+  const list = currentSet;
+
+  if (qIndex >= list.length){
+    // 결과 화면 (별 모으기)
+    const total = list.length;
+    const earned = sessionStars;
+    addStars(earned);
+    let starRow = "";
+    for (let i = 0; i < total; i++){
+      starRow += `<span class="result-star">${i < earned ? "⭐" : "☆"}</span>`;
+    }
+    let praise = earned === total ? "🏆 모두 맞혔어요! 최고예요!"
+               : earned >= Math.ceil(total*0.6) ? "👍 정말 잘했어요!"
+               : "💪 조금만 더 연습해요!";
+    app.innerHTML = `
+      <div class="top-bar"><button class="home-link" id="home">🏠</button>
+        <div class="page-title">${L.emoji} ${L.name} 연습</div></div>
+      <div class="done-msg">🎉 연습 끝!<br>${praise}</div>
+      <div class="star-result">
+        <div class="star-row">${starRow}</div>
+        <div class="star-count">별 <b>${earned}</b> / ${total} 개 획득!</div>
+      </div>
+      <div class="star-bank">⭐ 지금까지 모은 별: <b>${totalStars}</b>개</div>
+      <button class="big-btn" style="background:${L.color};" id="again">🔁 다시 도전</button>
+      <button class="big-btn btn-blue" id="other">🎯 다른 난이도</button>
+      <button class="big-btn btn-gray" id="home2">🏠 처음으로</button>`;
+    document.getElementById("home").onclick = renderHome;
+    document.getElementById("home2").onclick = renderHome;
+    document.getElementById("other").onclick = renderLevelSelect;
+    document.getElementById("again").onclick = () => renderPractice(level, 0);
+    return;
+  }
+
+  answered = false;
+  const q = list[qIndex];
+  userGaps = new Array(q.chars.length - 1).fill(false);
+
+  let inner = "";
+  q.chars.forEach((c, i) => {
+    inner += `<span class="char">${esc(c)}</span>`;
+    if (i < q.chars.length - 1){
+      inner += `<span class="gap" data-g="${i}"><span class="v">V</span></span>`;
+    }
+  });
+
+  app.innerHTML = `
+    <div class="top-bar"><button class="home-link" id="home">🏠</button>
+      <div class="page-title">${L.emoji} ${L.name} 연습</div></div>
+    <div class="practice-progress">${qIndex+1} / ${list.length} 번 &nbsp;·&nbsp; 이번 판 별 ⭐ ${sessionStars}</div>
+    <div class="practice-guide">글자 사이를 콕 누르면 <span style="color:#10ac84;">V</span> 표시가 되고 띄어져요!</div>
+    <div class="sentence-box" id="sbox">${inner}</div>
+    <div class="practice-actions">
+      <button class="big-btn btn-green" id="check">✅ 정답 확인</button>
+    </div>
+    <div id="resultArea"></div>
+  `;
+
+  document.getElementById("home").onclick = renderHome;
+
+  document.querySelectorAll(".gap").forEach(g => {
+    g.onclick = () => {
+      if (answered) return;
+      const idx = parseInt(g.dataset.g);
+      userGaps[idx] = !userGaps[idx];
+      g.classList.toggle("on", userGaps[idx]);
+    };
+  });
+
+  document.getElementById("check").onclick = () => checkAnswer(level, qIndex);
+}
+
+function checkAnswer(level, qIndex){
+  const list = currentSet;
+  const q = list[qIndex];
+  answered = true;
+  let allCorrect = true;
+  const gapEls = document.querySelectorAll(".gap");
+
+  gapEls.forEach(g => {
+    const idx = parseInt(g.dataset.g);
+    const should = q.gaps[idx];      // 정답: 띄어야 하나
+    const did = userGaps[idx];       // 사용자가 띄었나
+    g.classList.remove("on");
+    g.onclick = null; // 채점 후 잠금
+    if (should && did){
+      g.classList.add("on","correct"); // 맞게 띄움
+    } else if (should && !did){
+      g.classList.add("missed");       // 띄어야 하는데 안 띄움
+      allCorrect = false;
+    } else if (!should && did){
+      g.classList.add("wrong-added");  // 안 띄어야 하는데 띄움
+      allCorrect = false;
+    }
+  });
+
+  // 정답이면 이번 판 별 +1 (다시 풀기 눌러도 중복 지급 안 되게 처리)
+  let earnedNow = false;
+  if (allCorrect){
+    sessionStars += 1;
+    earnedNow = true;
+  }
+
+  // 정답 문장 표시
+  let ansHtml = "";
+  q.chars.forEach((c,i) => {
+    ansHtml += esc(c);
+    if (i < q.chars.length-1 && q.gaps[i]) ansHtml += '<span class="sp"> V </span>';
+  });
+
+  const isLast = qIndex === list.length - 1;
+  const area = document.getElementById("resultArea");
+  area.innerHTML = `
+    <div class="result-box ${allCorrect?'ok':'no'}">
+      <div class="result-head">${allCorrect ? '🎉 정답이에요!' : '💪 다시 볼까요?'}</div>
+      ${earnedNow ? '<div class="star-earn">⭐ 별 하나 획득!</div>' : ''}
+      <div class="answer-line">${ansHtml}</div>
+      <div class="explain">📌 <b>왜 그럴까요?</b><br>${q.rule}</div>
+      ${allCorrect ? '' : `<div class="explain" style="background:#fff0f3;">
+        🟧 주황색 = 여기를 <b>띄어야</b> 했어요 &nbsp; / &nbsp; 🟥 빨간색 = 여기는 <b>붙여야</b> 했어요</div>`}
+    </div>
+    <button class="big-btn btn-blue" id="next" style="margin-top:16px;">
+      ${isLast ? '🎉 끝내기' : '다음 문제 ▶'}
+    </button>
+    ${allCorrect ? '' : '<button class="small-btn btn-gray" id="retry">🔁 이 문제 다시</button>'}
+  `;
+  document.getElementById("next").onclick = () => { window.scrollTo(0,0); renderPractice(level, qIndex+1); };
+  const retryBtn = document.getElementById("retry");
+  if (retryBtn) retryBtn.onclick = () => { window.scrollTo(0,0); renderPractice(level, qIndex); };
+  document.getElementById("check").disabled = true;
+  document.getElementById("check").style.opacity = ".5";
+  area.scrollIntoView({behavior:"smooth", block:"nearest"});
+}
+
+/* 시작 */
+renderHome();
+</script>
+</body>
+</html>
